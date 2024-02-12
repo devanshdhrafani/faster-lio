@@ -1,5 +1,6 @@
 //
 // Created by xiang on 2021/10/9.
+// Modified by Devansh Dhrafani on 2024/02/11.
 //
 
 #include <gflags/gflags.h>
@@ -13,8 +14,9 @@
 
 /// run faster-LIO in offline mode
 
-DEFINE_string(config_file, "./config/avia.yaml", "path to config file");
-DEFINE_string(bag_file, "/home/xiang/Data/dataset/fast_lio2/avia/2020-09-16-quick-shack.bag", "path to the ros bag");
+DEFINE_string(config_file, "./src/faster-lio/config/velodyne_wildfire.yaml", "path to config file");
+DEFINE_string(bag_file, "/media/devansh/t7shield/lidar_processing/1.bags/frick_1/run1.bag", "path to the ros bag");
+DEFINE_string(save_dir, "./Log", "path to save directory");
 DEFINE_string(time_log_file, "./Log/time.log", "path to time log file");
 DEFINE_string(traj_log_file, "./Log/traj.txt", "path to traj log file");
 
@@ -81,18 +83,32 @@ int main(int argc, char **argv) {
         }
     }
 
+    std::string save_dir = FLAGS_save_dir;
+    if (save_dir.back() != '/') {
+        save_dir += "/";
+    }
+    if (access(save_dir.c_str(), 0) == -1) {
+        if (mkdir(save_dir.c_str(), 0777) == -1) {
+            LOG(ERROR) << "create save directory failed.";
+            return -1;
+        }
+    }
+
     LOG(INFO) << "finishing mapping";
-    laser_mapping->Finish();
+    laser_mapping->Finish(save_dir);
 
     /// print the fps
     double fps = 1.0 / (faster_lio::Timer::GetMeanTime("Laser Mapping Single Run") / 1000.);
     LOG(INFO) << "Faster LIO average FPS: " << fps;
 
-    LOG(INFO) << "save trajectory to: " << FLAGS_traj_log_file;
-    laser_mapping->Savetrajectory(FLAGS_traj_log_file);
+    std::string traj_log_file = save_dir + "traj.txt";
+    LOG(INFO) << "save trajectory to: " << traj_log_file;
+    laser_mapping->Savetrajectory(traj_log_file);
 
     faster_lio::Timer::PrintAll();
-    faster_lio::Timer::DumpIntoFile(FLAGS_time_log_file);
+
+    std::string time_log_file = save_dir + "time.log";
+    faster_lio::Timer::DumpIntoFile(time_log_file);
 
     return 0;
 }
