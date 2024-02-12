@@ -62,6 +62,7 @@ class LaserMapping {
     void Savetrajectory(const std::string &traj_file);
 
     void Finish();
+    void Finish(const std::string &map_dir);
 
    private:
     template <typename T>

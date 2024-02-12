@@ -858,4 +858,20 @@ void LaserMapping::Finish() {
 
     LOG(INFO) << "finish done";
 }
+
+void LaserMapping::Finish(const std::string &map_dir) {
+    /**************** save map ****************/
+    /* 1. make sure you have enough memories
+    /* 2. pcd save will largely influence the real-time performences **/
+    if (pcl_wait_save_->size() > 0 && pcd_save_en_) {
+        std::string file_name = std::string("scans.pcd");
+        std::string all_points_dir(std::string(map_dir) + file_name);
+        pcl::PCDWriter pcd_writer;
+        LOG(INFO) << "current scan saved to " << map_dir << file_name;
+        pcd_writer.writeBinary(all_points_dir, *pcl_wait_save_);
+    }
+
+    LOG(INFO) << "finish done";
+}
+
 }  // namespace faster_lio
