@@ -16,9 +16,7 @@
 
 DEFINE_string(config_file, "./src/faster-lio/config/velodyne_wildfire.yaml", "path to config file");
 DEFINE_string(bag_file, "/media/devansh/t7shield/lidar_processing/1.bags/frick_1/run1.bag", "path to the ros bag");
-DEFINE_string(save_dir, "./Log", "path to save directory");
-DEFINE_string(time_log_file, "./Log/time.log", "path to time log file");
-DEFINE_string(traj_log_file, "./Log/traj.txt", "path to traj log file");
+DEFINE_string(save_dir, "./results", "path to save directory");
 
 void SigHandle(int sig) {
     faster_lio::options::FLAG_EXIT = true;
